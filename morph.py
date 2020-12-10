@@ -11,7 +11,6 @@ height, width, channels = img1.shape
 #initialise output image array
 img3 = np.zeros((height,width,3)).astype(np.uint8)
 
-
 images = []
 images.append(img1)
 images.append(img2)
