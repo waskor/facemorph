@@ -11,17 +11,17 @@ height, width, channels = img1.shape
 #initialise output image array
 img3 = np.zeros((height,width,3)).astype(np.uint8)
 
-images = []
-images.append(img1)
-images.append(img2)
-
 #map landmarks using dlib model
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 lm_no = 68
 
+#initialise lists
 lm_list = []
 triangle_list = []
+images = []
+images.append(img1)
+images.append(img2)
 
 for p in range(len(images)):
 
