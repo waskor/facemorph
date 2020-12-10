@@ -130,7 +130,7 @@ k = 0
 #set desired frames
 frames = 40 
 
-#apply affine transforms
+#apply affine transformations and create morphed image
 for f in range(frames):
     for n in range(no_triangles):
         #find intermediate triangle by interpolating between triangle in image 1 and image 2
