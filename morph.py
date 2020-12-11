@@ -1,16 +1,19 @@
 import dlib 
 import cv2
 import numpy as np
-import sys
 
+#map facial landmarks using dlib model
 def find_landmarks(images, lm_list):
     global height, width
     
+    height, width, channels = images[0].shape
+    
+    #initialise face detector and landmark prediction
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+    
+    #number of landmarks
     lm_no = 68
-
-    height, width, channels = images[0].shape
 
     for p in range(len(images)):
 
@@ -46,9 +49,10 @@ def find_landmarks(images, lm_list):
         #store landmarks for image in list
         lm_list.append(lm_array)
 
+#facial landmark triangulation
 def landmark_triangulation(images, lm_list, triangle_list):
 
-    #Delaunay triangulation for image 1
+    #____________________image 1 Delaunay triangulation____________________
             
     #initialise empty Delaunay subdivision
     delrect = (0, 0, width, height)
@@ -65,19 +69,19 @@ def landmark_triangulation(images, lm_list, triangle_list):
     triangle_list.append(triangles)
 
     #draw triangles
-    for t in range(triangles.shape[0]):
+    # for t in range(triangles.shape[0]):
 
-        t1 = (triangles[t,0], triangles[t,1])
-        t2 = (triangles[t,2], triangles[t,3])
-        t3 = (triangles[t,4], triangles[t,5])
+        # t1 = (triangles[t,0], triangles[t,1])
+        # t2 = (triangles[t,2], triangles[t,3])
+        # t3 = (triangles[t,4], triangles[t,5])
 
         # cv2.line(images[p], t1, t2, (255, 0, 0), 1)
         # cv2.line(images[p], t2, t3, (255, 0, 0), 1)
         # cv2.line(images[p], t3, t1, (255, 0, 0), 1)
 
-    #Triangulation for image 2 based on image 1 triangulation
+    #____________________image 2 triangulation based on image 1 triangulation____________________
 
-    #initialise array for triangles in image 2
+    #initialise array for image 2 triangles
     trianglesnew = np.zeros((triangle_list[0].shape[0], 6))
     
     #loop through each triangle found in image 1
@@ -112,9 +116,9 @@ def landmark_triangulation(images, lm_list, triangle_list):
         triangle_list.append(trianglesnew)
 
 def morph_triangles(triangle_list, img1, img2, img3, k):
+    
+    #number of triangles
     no_triangles = triangle_list[0].shape[0]
-    #initialise output image array
-
 
     for n in range(no_triangles):
         #find intermediate triangle by interpolating between triangle in image 1 and image 2
@@ -171,10 +175,14 @@ def morph_triangles(triangle_list, img1, img2, img3, k):
         #add blended and morphed triangle to output image
         img3[tri_ri[1]:tri_ri[1]+tri_ri[3], tri_ri[0]:tri_ri[0]+tri_ri[2]] = img3[tri_ri[1]:tri_ri[1]+tri_ri[3], tri_ri[0]:tri_ri[0]+tri_ri[2]] + img_intr
 
+#apply morphing at set framerate
 def create_frames(frames, triangle_list, img1, img2):
-
+    
+    #initialise output image array
     img3 = np.zeros((height,width,3)).astype(np.uint8)
+    #initialise alpha blending value
     k = 0
+    
     for f in range(frames):
         morph_triangles(triangle_list, img1, img2, img3, k)
         framefile = "frame/morph" + str(f) + ".jpg"
@@ -184,17 +192,20 @@ def create_frames(frames, triangle_list, img1, img2):
 def morph_faces(filename1, filename2):
     img1 = cv2.imread(filename1)
     img2 = cv2.imread(filename2)
-    images = []
+    images = [img1, img2]
+    
+    #initialise landmark list
     lm_list = []
+    #initialise triangles list
     triangle_list = []
-    images.append(img1)
-    images.append(img2)
+    
     find_landmarks(images, lm_list)
     landmark_triangulation(images, lm_list, triangle_list)
-    create_frames(40, triangle_list, img1, img2)
+    create_frames(frames, triangle_list, img1, img2)
 
 
 if __name__ == '__main__':
     filename1 = "was2.jpg"
     filename2 = "bor.jpg"
-    morph_faces(filename1, filename2)
+    frames = 60
+    morph_faces(filename1, filename2, frames)
