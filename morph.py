@@ -149,18 +149,18 @@ def morph_triangles(triangle_list, img1, img2, img3, k):
         #find the affine transformation matrix
         affine1 = cv2.getAffineTransform(triangle_1_crop, triangle_intr_crop)
         affine2 = cv2.getAffineTransform(triangle_2_crop, triangle_intr_crop)
-
+                
+        #apply affine transformation to the pixels within cropped regions
+        #use cv2.BORDER_REFLECT to fill empty pixels when stitching triangles together
+        warp_1 = cv2.warpAffine(imgrect1, affine1, (tri_ri[2], tri_ri[3]), borderMode = cv2.BORDER_REFLECT)
+        warp_2 = cv2.warpAffine(imgrect2, affine2, (tri_ri[2], tri_ri[3]), borderMode = cv2.BORDER_REFLECT)
+        
         #initialise mask with size of intermediate triangle
         mask = np.zeros((tri_ri[3], tri_ri[2])).astype(np.uint8)
         #fill mask with intermediate triangle
         tri = cv2.fillConvexPoly(mask, np.int32(triangle_intr_crop), (255, 255, 255))
         #mask inversion
         maskinv = 255 - mask
-        
-        #apply affine transformation to the pixels within cropped regions
-        #use cv2.BORDER_REFLECT to fill empty pixels when stitching triangles together
-        warp_1 = cv2.warpAffine(imgrect1, affine1, (tri_ri[2], tri_ri[3]), borderMode = cv2.BORDER_REFLECT)
-        warp_2 = cv2.warpAffine(imgrect2, affine2, (tri_ri[2], tri_ri[3]), borderMode = cv2.BORDER_REFLECT)
         
         #apply triangle mask to intermediate region to remove pixels outside of triangle
         newimage1 = cv2.bitwise_and(warp_1,warp_1,mask = mask)
