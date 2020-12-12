@@ -205,7 +205,7 @@ def morph_faces(filename1, filename2):
 
 
 if __name__ == '__main__':
-    filename1 = "was2.jpg"
-    filename2 = "bor.jpg"
+    filename1 = "1.jpg"
+    filename2 = "2.jpg"
     frames = 60
     morph_faces(filename1, filename2)
