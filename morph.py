@@ -189,7 +189,7 @@ def create_frames(frames, triangle_list, img1, img2):
         cv2.imwrite(framefile, img3)
         k += 1/frames
 
-def morph_faces(filename1, filename2):
+def morph_faces(filename1, filename2, frames):
     img1 = cv2.imread(filename1)
     img2 = cv2.imread(filename2)
     images = [img1, img2]
@@ -205,7 +205,10 @@ def morph_faces(filename1, filename2):
 
 
 if __name__ == '__main__':
-    filename1 = "1.jpg"
-    filename2 = "2.jpg"
-    frames = 60
-    morph_faces(filename1, filename2)
+    
+    filename1 = sys.argv[1]
+    filename2 = sys.argv[2]
+    frames = int(sys.argv[3])
+
+    morph_faces(filename1, filename2, frames)
+
