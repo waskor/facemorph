@@ -79,7 +79,7 @@ def landmark_triangulation(images, lm_list, triangle_list):
         # cv2.line(images[p], t2, t3, (255, 0, 0), 1)
         # cv2.line(images[p], t3, t1, (255, 0, 0), 1)
 
-    #____________________image 2 triangulation based on image 1 triangulation____________________
+    #____________________image 2 triangulation____________________
 
     #initialise array for image 2 triangles
     trianglesnew = np.zeros((triangle_list[0].shape[0], 6))
